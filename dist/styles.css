@@ -35,3 +35,25 @@
 @media(prefers-reduced-motion:reduce){.course-card:hover .course-art img{transform:none}}
 
 .coffee-surface{background-image:url('assets/latte-surface.webp');background-size:100% 100%;border:4px solid #e9decb;box-shadow:inset 0 0 5px #6d3b1b66}
+
+/* Photographic coffee journal: tactile imagery instead of floating models. */
+.photographic-story{height:240vh;background:#110c09}
+.photographic-story .craft-sticky{min-height:0;max-height:none;height:100svh;padding:50px 6vw 24px}
+.photographic-story .craft-layout{grid-template-columns:.85fr 1.3fr;gap:6vw;max-height:none;min-height:0}
+.photographic-story .craft-copy h2{font-size:clamp(42px,4.4vw,70px)}
+.photographic-story .stage-detail{min-height:150px;margin-top:32px}
+.story-frame{position:relative;margin:0;height:100%;max-height:600px;min-height:360px;overflow:hidden;background:#24180f;border:1px solid #c9a66b30}
+.story-photo{position:absolute;inset:0;opacity:0;object-fit:cover;filter:brightness(.83) saturate(.75);transform:scale(1.045);transition:opacity 1.1s ease,transform 5s ease;pointer-events:none}
+.story-photo.is-active{opacity:1;transform:scale(1)}
+.story-photo-shade{position:absolute;inset:0;background:linear-gradient(180deg,#0f0a0710 50%,#0f0a07cc);pointer-events:none}
+.story-folio{position:absolute;top:22px;left:28px;font:italic 60px var(--serif);color:#f3e9dcd9;text-shadow:0 2px 20px #0008}
+.story-frame figcaption{position:absolute;bottom:28px;left:28px;right:28px;display:flex;align-items:end;justify-content:space-between;gap:20px;color:var(--cream);font:italic 29px var(--serif)}
+.story-frame figcaption small{font:8px var(--sans);letter-spacing:2px;max-width:85px;line-height:1.8;text-align:right}
+.story-instruction{font-size:8px;letter-spacing:1.5px;color:var(--gold);margin-top:25px}
+.photographic-story .stage-nav{margin-top:28px;flex-shrink:0}
+.photographic-story .stage-nav button{width:33.333%;padding:17px 0;font-size:25px}
+.cup-handle{border:0!important;border-radius:0!important;background:linear-gradient(135deg,#f2e7d7,#d3c1a5 65%,#a58c6d);clip-path:path('M 7 10 C 40 0 88 1 95 30 C 105 67 65 97 0 96 L 3 78 C 48 76 79 58 76 36 C 73 20 39 20 7 29 Z');box-shadow:none!important}
+@media(max-width:900px),(max-height:699px){.photographic-story{height:auto}.photographic-story .craft-sticky{position:relative;height:auto;padding:60px 6vw 30px}.photographic-story .craft-layout{grid-template-columns:1fr;gap:30px}.story-frame{height:480px;min-height:0}.photographic-story .stage-detail{min-height:120px;max-width:550px}.story-instruction{display:none}.photographic-story .section-label>span:last-child{display:none}}
+@media(max-width:600px){.story-frame{height:360px}.photographic-story .craft-sticky{padding-inline:24px}.story-frame figcaption{left:20px;right:20px;font-size:25px}.story-folio{left:20px;font-size:48px}.photographic-story .stage-nav button{font-size:21px}.photographic-story .stage-nav small{display:block;margin-bottom:6px}}
+.motion-paused .story-photo{transition:none;transform:none}
+@media(prefers-reduced-motion:reduce){.photographic-story{height:auto}.photographic-story .craft-sticky{position:relative;height:auto}.story-frame{height:480px}.story-photo{transition:none;transform:none}.story-instruction{display:none}}

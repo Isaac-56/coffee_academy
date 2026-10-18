@@ -17,13 +17,35 @@ $('#course-grid').addEventListener('click',e=>{const b=e.target.closest('[data-c
 const photos=[{src:'assets/lab.webp',title:'The brewing bench',alt:'Reference photograph of pour-over coffee preparation'},{src:'assets/beans.webp',title:'A study in texture',alt:'Reference photograph of roasted coffee beans'}];$$('[data-gallery]').forEach(b=>b.addEventListener('click',()=>{const p=photos[+b.dataset.gallery];openDialog(`<img src="${p.src}" alt="${p.alt}"><h2>${p.title}</h2><p>Atmosphere reference only. This is not a photograph of Henok’s training facilities.</p>`);}));
 $('#privacy-open').addEventListener('click',()=>openDialog('<p class="eyebrow">PRIVACY & ENQUIRIES</p><h2>Your information, thoughtfully handled.</h2><p>In this preview, enquiry details stay in this page and can be downloaded to your device. They are not sent to Henok or saved on a server. Reloading the page clears the form. Your motion preference may be saved in this browser.</p><p>Live registrations, student accounts, payments and newsletter delivery are not enabled. Before accepting real registrations, the academy must provide its contact information and a privacy notice covering data handling and retention.</p><p>Joining an ordinary WhatsApp group makes your phone number visible to other members. Group invitations will be provided only after class confirmation.</p><p>Typography, the 3D library and reference images are served with the website.</p>'));
 // Lazy-load one shared Three.js module. Low-power devices keep the CSS artwork until requested.
-let modulePromise, hero, craft, heroLoading=false, craftLoading=false;
-async function loadScene(kind){if(kind==='hero'?(hero||heroLoading):(craft||craftLoading))return;if(kind==='hero')heroLoading=true;else craftLoading=true;const parent=kind==='hero'?$('#hero-art'):$('.craft-art');try{modulePromise ||= import('./scene.js?v=tera-3');const {createScene}=await modulePromise;const result=createScene($(`#${kind}-canvas`),kind,{paused,onReady:()=>parent.classList.add('ready'),onFailure:()=>{parent.classList.remove('ready');if(kind==='hero')$('#scene-toggle').textContent='Lightweight view';}});if(result){scenes.push(result);if(kind==='hero'){hero=result;$('#scene-toggle').textContent='3D experience active';}else{craft=result;craft.setStage(currentStage);}}}catch(e){parent.classList.remove('ready');if(kind==='hero')$('#scene-toggle').textContent='Lightweight view';}finally{if(kind==='hero')heroLoading=false;else craftLoading=false;}}
+let hero,heroLoading=false;
+async function loadHero(){
+ if(hero||heroLoading)return;heroLoading=true;
+ const parent=$('#hero-art');
+ try{const {createScene}=await import('./scene.js?v=tera-4');
+ hero=createScene($('#hero-canvas'),'hero',{paused,onReady:()=>parent.classList.add('ready'),onFailure:()=>parent.classList.remove('ready')});
+ if(hero){scenes.push(hero);$('#scene-toggle').textContent='3D experience active';}
+ }catch{parent.classList.remove('ready');$('#scene-toggle').textContent='Lightweight view';}finally{heroLoading=false;}
+}
 const lowPower=reduced.matches||navigator.connection?.saveData||(navigator.deviceMemory&&navigator.deviceMemory<=4)||matchMedia('(max-width:760px)').matches;
-$('#scene-toggle').addEventListener('click',()=>{loadScene('hero');loadScene('craft');});if(!lowPower){setTimeout(()=>loadScene('hero'),250);const observer=new IntersectionObserver(es=>{if(es.some(e=>e.isIntersecting)){loadScene('craft');observer.disconnect();}},{rootMargin:'400px'});observer.observe($('#craft'));}
-let currentStage=0,manualUntil=0;function setStage(index){currentStage=Math.max(0,Math.min(4,index));const s=stages[currentStage];$('#stage-number').textContent=`0${currentStage+1} / ${s.label}`;$('#stage-title').textContent=s.title;$('#stage-description').textContent=s.description;$('#hotspot-content').textContent=s.detail;$$('[data-stage]').forEach(b=>{const active=+b.dataset.stage===currentStage;b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active));});craft?.setStage(currentStage);const fallback=$('.bean-fallback');fallback.style.filter=`brightness(${[1.35,1,.7,.9,1.15][currentStage]})`;}
-setStage(0);$$('[data-stage]').forEach(b=>b.addEventListener('click',()=>{manualUntil=performance.now()+2500;setStage(+b.dataset.stage);}));let scrollQueued=false;window.addEventListener('scroll',()=>{if(scrollQueued)return;scrollQueued=true;requestAnimationFrame(()=>{scrollQueued=false;if(paused||innerWidth<=760||performance.now()<manualUntil)return;const r=$('#craft').getBoundingClientRect();const travel=r.height-innerHeight;if(travel>0&&r.top<=0&&r.bottom>=innerHeight){const stage=Math.min(4,Math.floor((-r.top/travel)*5));if(stage!==currentStage)setStage(stage);}});},{passive:true});
-$('#hotspot').addEventListener('click',()=>{const open=$('#hotspot-content').hidden;$('#hotspot-content').hidden=!open;$('#hotspot').setAttribute('aria-expanded',String(open));});$('#rotate-left').addEventListener('click',()=>{if(craft)craft.rotate(-.4);else{$('.bean-fallback').style.transform=`rotate(${fallbackRotation-=20}deg)`;}});$('#rotate-right').addEventListener('click',()=>{if(craft)craft.rotate(.4);else{$('.bean-fallback').style.transform=`rotate(${fallbackRotation+=20}deg)`;}});let fallbackRotation=35;
+$('#scene-toggle').addEventListener('click',loadHero);if(!lowPower)setTimeout(loadHero,250);
+// Photography replaces the second WebGL scene. Chapters work by keyboard,
+// touch or scroll, and remain still when motion is paused.
+let currentStage=0,manualUntil=0;
+function setStage(index){
+ currentStage=Math.max(0,Math.min(stages.length-1,index));const s=stages[currentStage];
+ $('#stage-number').textContent=`0${currentStage+1} / ${s.label}`;
+ $('#stage-title').textContent=s.title;$('#stage-description').textContent=s.description;
+ $('#story-caption').textContent=s.caption;$('#story-folio').textContent=`0${currentStage+1}`;
+ $$('[data-stage]').forEach(b=>{const active=+b.dataset.stage===currentStage;b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active));});
+ $$('[data-story-image]').forEach(img=>{const active=+img.dataset.storyImage===currentStage;img.classList.toggle('is-active',active);img.setAttribute('aria-hidden',String(!active));});
+}
+setStage(0);$$('[data-stage]').forEach(b=>b.addEventListener('click',()=>{manualUntil=performance.now()+4000;setStage(+b.dataset.stage);}));
+let scrollQueued=false;
+window.addEventListener('scroll',()=>{if(scrollQueued)return;scrollQueued=true;requestAnimationFrame(()=>{
+ scrollQueued=false;if(paused||innerWidth<=900||innerHeight<700||performance.now()<manualUntil)return;
+ const r=$('#craft').getBoundingClientRect(),travel=r.height-innerHeight;
+ if(travel>0&&r.top<=0&&r.bottom>=innerHeight){const index=Math.min(stages.length-1,Math.floor((-r.top/travel)*stages.length));if(index!==currentStage)setStage(index);}
+ });},{passive:true});
 function syncLevels(){const selected=$('#level').value,levels=allowedLevels($('#format').value);$('#level').replaceChildren(...levels.map(v=>new Option(v[0].toUpperCase()+v.slice(1),v,false,v===selected)));if(!levels.includes(selected))$('#level').value='beginner';$('#format-help').textContent=$('#format').value==='online'?'Online training is for beginners only. Access to lessons follows enrolment confirmation.':'After your place is confirmed, you’ll receive your class details and WhatsApp group invitation.';}
 $('#format').addEventListener('change',syncLevels);syncLevels();let downloadUrl;
 if(settings.enquiryEndpoint){$('.submit-button').innerHTML='Send my enquiry <span>↗</span>';$('#submission-note').textContent='Sending an enquiry does not reserve a place. Enrolment requires confirmation.';}

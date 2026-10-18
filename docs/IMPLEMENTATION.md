@@ -66,3 +66,7 @@ Courses 2 and 4 now use separate photographs. Replaced the stacked latte-art pat
 Sensory course image: https://images.unsplash.com/photo-1495474472287-4d71bcdd2085 (illustrative reference).
 
 The cup uses a generated photographic coffee-surface texture at `dist/assets/latte-surface.webp`, also used by the lightweight hero fallback. It was generated with the built-in image tool using this brief: orthographic top-down cappuccino surface, edge-to-edge caramel crema, one broad naturally poured ivory heart occupying roughly 72% of the width, organic microfoam and feathered edges, no cup or baked shadows. The runtime retains a local heart texture if the image cannot load.
+
+
+## TERA photographic journal revision
+The craft section now uses three photographic chapters (Character, Ritual, Expression), with scroll crossfades on desktop and accessible chapter buttons everywhere. Existing licensed reference photographs are illustrative, not academy facilities. The second WebGL canvas is no longer loaded. Hero ceramic handle uses a continuous Bezier ribbon with rounded bevels and two bowl attachment shoulders; latte surface and steam are preserved. Reduced-motion and compact layouts avoid the pinned scroll experience.

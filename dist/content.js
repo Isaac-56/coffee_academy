@@ -13,11 +13,9 @@ export const courses = [
   {id:'business', number:'05', title:'Café Business Management', subtitle:'Bring your vision to the table.', format:['in-person'], level:'To be confirmed', icon:'business', description:'A proposed pathway for exploring the operations behind a thoughtful café experience.', topics:['Service and workflow','Quality and consistency','Planning a café concept']},
 ];
 export const stages = [
-  {label:'THE BEAN', title:'It begins with possibility.', description:'Origin, variety and processing shape the character waiting inside every bean.', detail:'Look closely: the centre crease is a familiar feature of the seed we call a coffee bean. Every origin tells a different story.'},
-  {label:'THE ROAST', title:'Character, revealed by heat.', description:'Roasting transforms green coffee, developing colour, aroma and flavour over time.', detail:'Roasting is a balance of heat and time. A darker colour alone does not tell you whether a coffee will taste better.'},
-  {label:'THE GRIND', title:'Precision in the smallest details.', description:'Grinding creates the surface area that lets water draw flavour from the coffee.', detail:'Grind size changes the way water interacts with coffee. Consistency helps make your brewing results repeatable.'},
-  {label:'THE BREW', title:'Where patience meets precision.', description:'Water, temperature and time come together. Small adjustments can change the cup.', detail:'A brew recipe is a starting point. Observe the result and adjust one variable at a time.'},
-  {label:'THE CUP', title:'An invitation to savour.', description:'Pause, taste and notice. The final cup is both a result and the beginning of another discovery.', detail:'Let the coffee cool a little and taste again. Your perception of its aroma, sweetness and balance may change.'},
+ {label:'CHARACTER',title:'Read the bean.',description:'Origin, processing and roasting leave their mark. Learning to recognise that character is where the craft begins.',caption:'A study in texture'},
+ {label:'RITUAL',title:'Make every movement matter.',description:'The grind. The water. The pace of the pour. A thoughtful brewing routine turns small decisions into a balanced cup.',caption:'Precision, poured slowly'},
+ {label:'EXPRESSION',title:'Finish with intention.',description:'Silky milk meets carefully extracted coffee. Texture and control come together in a cup made to be savoured.',caption:'The final, personal touch'},
 ];
 export function allowedLevels(format) { return format === 'online' ? ['beginner'] : ['beginner','intermediate','professional']; }
 export function validateEnquiry(data) {

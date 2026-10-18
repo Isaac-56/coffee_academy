@@ -6,24 +6,18 @@ export function smoothProfile(points, samples=100){
  return new THREE.LatheGeometry(curve.getPoints(samples).map(p=>new THREE.Vector2(Math.max(0,p.x),p.y)),128);
 }
 export function handleGeometry(){
- // A tapered, flattened D-shaped handle with separate upper and lower shoulders.
- // Neither its centreline nor its section is circular.
- const curve=new THREE.CatmullRomCurve3([
-  new THREE.Vector3(.88,.91,0),new THREE.Vector3(1.13,.97,0),
-  new THREE.Vector3(1.43,.86,0),new THREE.Vector3(1.49,.64,0),
-  new THREE.Vector3(1.36,.39,0),new THREE.Vector3(1.06,.25,0),
-  new THREE.Vector3(.72,.29,0),
- ],false,'centripetal');
- const length=96,sides=20,frames=curve.computeFrenetFrames(length,false),positions=[],uv=[],indices=[];
- for(let i=0;i<=length;i++){
-  const t=i/length,p=curve.getPointAt(t),thickness=.075+.055*Math.pow(Math.abs(2*t-1),3);
-  for(let j=0;j<=sides;j++){
-   const a=j/sides*Math.PI*2,offset=frames.normals[i].clone().multiplyScalar(Math.cos(a)*thickness*1.08).addScaledVector(frames.binormals[i],Math.sin(a)*thickness*.82);
-   positions.push(p.x+offset.x,p.y+offset.y,p.z+offset.z);uv.push(t,j/sides);
-   if(i<length&&j<sides){const k=i*(sides+1)+j;indices.push(k,k+1,k+sides+1,k+1,k+sides+2,k+sides+1);}
-  }
- }
- const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));g.setIndex(indices);g.computeVertexNormals();return g;
+ // One continuous ceramic ribbon: soft shoulders, an open finger space and
+ // rounded bevels. Both ends overlap the bowl rather than hovering beside it.
+ const shape=new THREE.Shape();
+ shape.moveTo(.85,.94);
+ shape.bezierCurveTo(1.08,1.015,1.38,1.00,1.47,.83);
+ shape.bezierCurveTo(1.60,.57,1.29,.28,.59,.25);
+ shape.lineTo(.64,.40);
+ shape.bezierCurveTo(1.10,.42,1.36,.59,1.32,.75);
+ shape.bezierCurveTo(1.29,.86,1.08,.88,.84,.80);
+ shape.closePath();
+ const g=new THREE.ExtrudeGeometry(shape,{depth:.10,steps:1,curveSegments:64,bevelEnabled:true,bevelThickness:.035,bevelSize:.025,bevelSegments:8});
+ g.translate(0,0,-.05);return g;
 }
 export function sculptedBeanGeometry(){
  const g=new THREE.SphereGeometry(1,72,48),pos=g.attributes.position;

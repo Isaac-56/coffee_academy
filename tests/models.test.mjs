@@ -7,20 +7,16 @@ test('sculpted geometry is finite and has valid triangle references',()=>{
   assert.ok(g.attributes.position.count>1000);
   for(const n of g.attributes.position.array)assert.ok(Number.isFinite(n));
   for(const n of g.attributes.normal.array)assert.ok(Number.isFinite(n));
-  for(const i of g.index.array)assert.ok(i<g.attributes.position.count);
+  for(const i of (g.index?.array||[]))assert.ok(i<g.attributes.position.count);
   g.dispose();
  }
 });
-test('handle joins the cup at two distinct heights and has finger clearance',()=>{
- const g=handleGeometry(),p=g.attributes.position;
- g.computeBoundingBox();assert.ok(g.boundingBox.max.x>1.4);
- // Start and end sections sit at upper and lower attachment shoulders.
- const average=i=>{const v=new THREE.Vector3();for(let j=0;j<=20;j++)v.add(new THREE.Vector3().fromBufferAttribute(p,i*21+j));return v.divideScalar(21);};
- const top=average(0),bottom=average(96);
- assert.ok(top.y>.85&&bottom.y<.35);assert.ok(top.x<1&&bottom.x<.85);
- const mid=new THREE.Vector3();for(let j=0;j<20;j++)mid.add(new THREE.Vector3().fromBufferAttribute(p,48*21+j));mid.divideScalar(20);
- const outer=new THREE.Vector3().fromBufferAttribute(p,48*21).sub(mid);const normal=new THREE.Vector3().fromBufferAttribute(g.attributes.normal,48*21);assert.ok(outer.dot(normal)>0);
- g.dispose();
+test('ceramic handle has open finger clearance and two attachment shoulders',()=>{
+ const g=handleGeometry();g.computeBoundingBox();assert.ok(g.boundingBox.max.x>1.4);assert.ok(g.boundingBox.min.x<.65);
+ const mesh=new THREE.Mesh(g,new THREE.MeshBasicMaterial({side:THREE.DoubleSide}));
+ const hit=(x,y)=>new THREE.Raycaster(new THREE.Vector3(x,y,2),new THREE.Vector3(0,0,-1)).intersectObject(mesh).length;
+ assert.equal(hit(1.13,.65),0);assert.ok(hit(.88,.90)>0);assert.ok(hit(.68,.32)>0);
+ g.dispose();mesh.material.dispose();
 });
 test('cup liquid sits below rim and inside bowl',()=>{
  const m=new THREE.MeshBasicMaterial();const cup=createCup({porcelain:m,gold:m,coffee:m,meniscus:m});
