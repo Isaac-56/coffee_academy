@@ -2,8 +2,8 @@ import * as THREE from 'three';
 
 // Sculpted product proportions. Geometry is shared by hero and craft views.
 export function smoothProfile(points, samples=100){
- const curve=new THREE.SplineCurve(points.map(p=>new THREE.Vector2(...p)));
- return new THREE.LatheGeometry(curve.getPoints(samples),128);
+ const curve=new THREE.CatmullRomCurve3(points.map(p=>new THREE.Vector3(p[0],p[1],0)),false,'centripetal');
+ return new THREE.LatheGeometry(curve.getPoints(samples).map(p=>new THREE.Vector2(Math.max(0,p.x),p.y)),128);
 }
 export function handleGeometry(){
  // A tapered, flattened D-shaped handle with separate upper and lower shoulders.
@@ -44,10 +44,10 @@ export function createCup(materials){
  addMesh(smoothProfile(profile),materials.porcelain,group);
  addMesh(handleGeometry(),materials.porcelain,group);
  // Tiny fired-gold lip rather than a thick metallic ring.
- ring(.939,.009,materials.gold,group,1.067);
+ // Porcelain lip is part of the continuous profile: no overlapping metal mesh.
  addMesh(smoothProfile([[0,.035],[.35,.035],[.40,.055],[.405,.105],[.37,.135],[0,.135]],40),materials.porcelain,group);
  const saucer=[[0,-.07],[.45,-.07],[.70,-.055],[1.05,-.015],[1.40,.07],[1.53,.115],[1.56,.14],[1.55,.159],[1.50,.166],[1.39,.14],[1.06,.065],[.71,.025],[.47,.018],[0,.018]];
- addMesh(smoothProfile(saucer,90),materials.porcelain,group,[0,-.045,0]);ring(1.535,.007,materials.gold,group,.111);
+ addMesh(smoothProfile(saucer,90),materials.porcelain,group,[0,-.045,0]);
  const liquid=addMesh(new THREE.CircleGeometry(.89,128),materials.coffee,group,[0,.998,0]);liquid.rotation.x=-Math.PI/2;
  ring(.887,.006,materials.meniscus,group,1.001);
  // Curved lettering follows the face of the cup rather than floating on a plane.
@@ -55,12 +55,27 @@ export function createCup(materials){
  return group;
 }
 export function createBean(material){const g=new THREE.Group();addMesh(sculptedBeanGeometry(),material,g);return g;}
+// Integrated pour-over brewer: the paper is supported by a continuous glass neck.
+// No floating cone, suspended support ring or disconnected coffee stream.
 export function createDripper(materials){
- const group=new THREE.Group();
- const profile=[[.13,-.08],[.16,.02],[.31,.32],[.55,.71],[.78,1.10],[.8,1.13],[.78,1.16],[.75,1.14],[.51,.76],[.27,.36],[.13,.05]];
- const geometry=smoothProfile(profile,80),p=geometry.attributes.position;
- for(let i=0;i<p.count;i++){const x=p.getX(i),z=p.getZ(i),y=p.getY(i);const a=Math.atan2(z,x);const r=1+.014*Math.cos(a*22+y*2);p.setXYZ(i,x*r,y,z*r);}
- geometry.computeVertexNormals();addMesh(geometry,materials.porcelain,group);ring(.785,.008,materials.gold,group,1.145);
- ring(.38,.04,materials.porcelain,group,-.05);
+ const group=new THREE.Group();group.name='Glass pour-over brewer';
+ const glassProfile=[[0,0],[.47,0],[.64,.04],[.72,.17],[.74,.35],[.69,.61],[.54,.86],[.33,1.08],[.29,1.23],[.36,1.40],[.55,1.65],[.75,1.89],[.76,1.92],[.74,1.94],[.72,1.91],[.52,1.66],[.33,1.40],[.27,1.24],[.30,1.07],[.52,.84],[.67,.60],[.71,.35],[.69,.18],[.62,.08],[.46,.045],[0,.045]];
+ const vessel=addMesh(smoothProfile(glassProfile,160),materials.glass,group);vessel.castShadow=false;vessel.renderOrder=2;
+ ring(.742,.012,materials.glassEdge,group,1.918);
+ const collar=addMesh(smoothProfile([[.29,1.02],[.36,1.04],[.39,1.10],[.38,1.24],[.34,1.30],[.29,1.28],[.285,1.03]],60),materials.wood,group);collar.name='Supported wood collar';
+ ring(.387,.016,materials.leather,group,1.15);
+ const tie=new THREE.CatmullRomCurve3([new THREE.Vector3(.1,1.15,.38),new THREE.Vector3(.18,1.10,.43),new THREE.Vector3(.20,.89,.45)]);
+ addMesh(new THREE.TubeGeometry(tie,24,.013,8,false),materials.leather,group);
+ // Filter overlaps the glass cone at its wall, with a visible folded paper edge.
+ const paperGeo=new THREE.ConeGeometry(.69,.82,96,1,true);paperGeo.rotateZ(Math.PI);
+ const paper=addMesh(paperGeo,materials.paper,group,[0,1.57,0]);paper.castShadow=false;
+ const grounds=addMesh(new THREE.CircleGeometry(.37,64),materials.bean,group,[0,1.58,0]);grounds.rotation.x=-Math.PI/2;
+ const liquid=addMesh(smoothProfile([[0,.06],[.46,.06],[.62,.10],[.68,.23],[.69,.36],[.66,.48],[0,.48]],80),materials.brewed,group);liquid.renderOrder=0;
+ const surface=addMesh(new THREE.CircleGeometry(.662,96),materials.brewed,group,[0,.48,0]);surface.rotation.x=-Math.PI/2;
  return group;
+}
+export function createSampleDish(materials){
+ const g=new THREE.Group();
+ addMesh(smoothProfile([[0,-.12],[.65,-.12],[1.03,-.07],[1.17,.07],[1.18,.13],[1.14,.15],[1.05,.02],[.65,-.07],[0,-.07]],70),materials.porcelain,g);
+ return g;
 }

@@ -58,3 +58,11 @@ Font and Three.js licenses are included alongside this document.
 Replaced the circular handle with a custom tapered D-shaped mesh, smoothed the porcelain profile, added image-based studio lighting and grounded shadows, and replaced faint sprite dots with animated noise-driven rising steam. Beans now use recessed geometry and fine surface texture. Course cards use illustrative photography. Brand updated to TERA Coffee Academy; instructor identity is preserved.
 
 Additional reference photograph: https://images.unsplash.com/photo-1541167760496-1628856ab772
+
+## Coffee collection and craft revision
+
+Courses 2 and 4 now use separate photographs. Replaced the stacked latte-art pattern with one larger heart. The brew stage is an integrated glass pour-over vessel, paper filter and wooden collar; the unsupported cone/ring/cup assembly is removed. Bean and roast stages show sample dishes; grounds use a smaller particle scale. A shared presentation base grounds the craft stages. Cup and saucer use continuous porcelain rims to avoid intersecting gold mesh artifacts.
+
+Sensory course image: https://images.unsplash.com/photo-1495474472287-4d71bcdd2085 (illustrative reference).
+
+The cup uses a generated photographic coffee-surface texture at `dist/assets/latte-surface.webp`, also used by the lightweight hero fallback. It was generated with the built-in image tool using this brief: orthographic top-down cappuccino surface, edge-to-edge caramel crema, one broad naturally poured ivory heart occupying roughly 72% of the width, organic microfoam and feathered edges, no cup or baked shadows. The runtime retains a local heart texture if the image cannot load.

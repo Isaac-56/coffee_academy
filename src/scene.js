@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
-import {createCup,createBean,createDripper,addMesh} from './coffee-models.js';
+import {createCup,createBean,createDripper,createSampleDish,addMesh} from './coffee-models.js';
 import {makeMaterials,contactShadow} from './materials.js';
 import {createSteam} from './steam.js';
 
@@ -8,16 +8,16 @@ export function createScene(canvas,kind,{onReady,onFailure,paused=false}={}){
  let renderer;
  try{renderer=new THREE.WebGLRenderer({canvas,alpha:true,antialias:true,powerPreference:'low-power'});}catch{onFailure?.();return null;}
  renderer.setPixelRatio(Math.min(devicePixelRatio,1.8));renderer.setClearColor(0x000000,0);
- renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.05;
+ renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=.92;
  renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
  const scene=new THREE.Scene(),camera=new THREE.PerspectiveCamera(35,1,.1,40),root=new THREE.Group();scene.add(root);
  // Image-based studio reflections give glazed porcelain a readable curved surface.
  const room=new RoomEnvironment();const pmrem=new THREE.PMREMGenerator(renderer);const environment=pmrem.fromScene(room,.055);scene.environment=environment.texture;scene.environmentIntensity=.65;room.dispose();pmrem.dispose();
  scene.add(new THREE.HemisphereLight(0xfff1df,0x2b1a12,.65));
- const key=new THREE.DirectionalLight(0xfff1df,3.2);key.position.set(-3,6,5);key.castShadow=true;key.shadow.mapSize.set(1024,1024);key.shadow.camera.left=-3;key.shadow.camera.right=3;key.shadow.camera.top=4;key.shadow.camera.bottom=-3;key.shadow.normalBias=.015;key.shadow.bias=-.0002;key.shadow.radius=4;scene.add(key);
+ const key=new THREE.DirectionalLight(0xfff1df,2.2);key.position.set(-3,6,5);key.castShadow=true;key.shadow.mapSize.set(1024,1024);key.shadow.camera.left=-3;key.shadow.camera.right=3;key.shadow.camera.top=4;key.shadow.camera.bottom=-3;key.shadow.normalBias=.015;key.shadow.bias=-.0002;key.shadow.radius=4;scene.add(key);
  const rim=new THREE.DirectionalLight(0xe8c18e,1.6);rim.position.set(3,4,-2);scene.add(rim);
  const fill=new THREE.DirectionalLight(0xdfe7f0,.5);fill.position.set(2,2,5);scene.add(fill);
- const materials=makeMaterials(),stageGroups=[],beans=[],steamGroups=[];
+ const materials=makeMaterials({onTextureReady:()=>{if(disposed)return false;draw();return true;}}),stageGroups=[],beans=[],steamGroups=[];
  let stage=0,visible=true,disposed=false,frame=0,last=0,elapsed=0,targetX=0,targetY=0,manualAngle=0,dragging=false,startX=0;
  let ro,io,primaryCup;
  if(kind==='hero'){
@@ -29,12 +29,19 @@ export function createScene(canvas,kind,{onReady,onFailure,paused=false}={}){
   const receiver=addMesh(new THREE.PlaneGeometry(10,10),new THREE.ShadowMaterial({opacity:.20}),root,[0,-.121,0]);receiver.rotation.x=-Math.PI/2;receiver.castShadow=false;
   camera.position.set(2.8,3.4,7.4);camera.lookAt(0,1.3,0);
  }else{
-  const green=createBean(materials.green),roasted=createBean(materials.bean);[green,roasted].forEach(b=>{b.scale.setScalar(1.25);b.rotation.z=.38;});stageGroups.push(green,roasted);
-  const grounds=new THREE.Group(),geo=new THREE.IcosahedronGeometry(.035,1),mat=new THREE.MeshStandardMaterial({color:0x613719,roughness:.92});const grains=new THREE.InstancedMesh(geo,mat,850),dummy=new THREE.Object3D();
-  for(let i=0;i<850;i++){const a=i*2.39996,r=Math.sqrt(i/850)*1.15;dummy.position.set(Math.cos(a)*r,(1-r/1.2)*.45-.25+Math.sin(i*19)*.02,Math.sin(a)*r);dummy.rotation.set(i*.7,i*.3,i);dummy.scale.set(.5+(i%5)/4,.7+(i%7)/4,.5+(i%3)/3);dummy.updateMatrix();grains.setMatrixAt(i,dummy.matrix);}grains.castShadow=true;grounds.add(grains);stageGroups.push(grounds);
-  const brew=new THREE.Group(),dripper=createDripper(materials);dripper.position.y=.2;brew.add(dripper);const lower=createCup(materials);lower.scale.setScalar(.65);lower.position.y=-.72;brew.add(lower);const stream=addMesh(new THREE.CylinderGeometry(.008,.016,.24,8),materials.meniscus,brew,[0,.04,0]);stream.castShadow=false;stageGroups.push(brew);
-  const final=new THREE.Group(),c=createCup(materials);final.add(c);const vapour=createSteam();final.add(vapour);steamGroups.push(vapour);final.scale.setScalar(.85);final.position.y=-.5;stageGroups.push(final);
-  stageGroups.forEach((g,i)=>{g.visible=i===0;root.add(g);});camera.position.set(1.4,2.1,6.8);camera.lookAt(0,.15,0);
+  // Actual sample arrangements, scaled to a shared tabletop presentation.
+  for(const material of [materials.green,materials.bean]){
+   const sample=createSampleDish(materials);
+   for(let i=0;i<9;i++){const b=createBean(material);b.scale.set(.25,.25,.25);const a=i*2.4,r=i===0?0:.33+(i%3)*.16;b.position.set(Math.cos(a)*r,.045,Math.sin(a)*r);b.rotation.set(Math.PI/2,.15*i,a);sample.add(b);}
+   stageGroups.push(sample);
+  }
+  const grounds=createSampleDish(materials),geo=new THREE.IcosahedronGeometry(.018,1),mat=new THREE.MeshStandardMaterial({color:0x613719,roughness:.92});const grains=new THREE.InstancedMesh(geo,mat,850),dummy=new THREE.Object3D();
+  for(let i=0;i<850;i++){const a=i*2.39996,r=Math.sqrt(i/850)*.83;dummy.position.set(Math.cos(a)*r,(1-r/.9)*.24-.025+Math.sin(i*19)*.02,Math.sin(a)*r);dummy.rotation.set(i*.7,i*.3,i);dummy.scale.set(.5+(i%5)/4,.7+(i%7)/4,.5+(i%3)/3);dummy.updateMatrix();grains.setMatrixAt(i,dummy.matrix);}grains.castShadow=true;grounds.add(grains);stageGroups.push(grounds);
+  const brew=createDripper(materials);brew.position.y=-.695;brew.scale.setScalar(1.13);stageGroups.push(brew);
+  const final=new THREE.Group(),c=createCup(materials);final.add(c);const vapour=createSteam();final.add(vapour);steamGroups.push(vapour);final.scale.setScalar(.85);final.position.y=-.60;stageGroups.push(final);
+  stageGroups.forEach((g,i)=>{g.visible=i===0;root.add(g);});camera.position.set(1.7,2.35,6.2);camera.lookAt(0,.25,0);
+  const base=addMesh(new THREE.CylinderGeometry(1.42,1.46,.13,96),materials.tray,root,[0,-.76,0]);base.name='Presentation base';
+  stageGroups[0].position.y=-.575;stageGroups[1].position.y=-.575;stageGroups[2].position.y=-.575;
  }
  function fail(){onFailure?.();dispose();}
  // Shader compile errors must retain the fallback instead of showing a blank canvas.
@@ -46,7 +53,7 @@ export function createScene(canvas,kind,{onReady,onFailure,paused=false}={}){
   if(primaryCup)primaryCup.rotation.y=-.15+Math.sin(elapsed*.18)*.025;
   beans.forEach((b,i)=>{b.position.y=b.userData.base.y+Math.sin(elapsed*.45+i*2)*.07;b.rotation.y+=dt*.09;});
   steamGroups.forEach(g=>g.userData.update(elapsed));
-  if(kind==='craft'){stageGroups[stage].rotation.y=Math.sin(elapsed*.2)*.09;camera.position.z+=(6.8-stage*.05-camera.position.z)*.025;}
+  if(kind==='craft'){stageGroups[stage].rotation.y=Math.sin(elapsed*.2)*.09;camera.position.z+=(6.2-stage*.035-camera.position.z)*.025;}
   draw();if(!disposed)frame=requestAnimationFrame(tick);
  }
  function wake(){if(!frame&&!paused&&visible&&!document.hidden&&!disposed){last=performance.now();frame=requestAnimationFrame(tick);}else draw();}

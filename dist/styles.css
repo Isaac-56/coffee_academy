@@ -30,6 +30,8 @@
 .course-card:hover .course-art img{transform:scale(1.045);filter:brightness(.9) saturate(.85)}
 .course-art:after{inset:0;width:100%;height:100%;border:0;border-radius:0;background:linear-gradient(180deg,#0f0a0710 45%,#1b120c 100%)}
 .course-num{z-index:2;color:#f3e9dc;text-shadow:0 1px 12px #000}
-.course-card:nth-child(4) .course-art img{object-position:70% 65%;transform:scale(1.3)}
+.course-card:nth-child(4) .course-art img{object-position:center;transform:none}
 @media(max-width:760px){.course-art{height:175px}}
 @media(prefers-reduced-motion:reduce){.course-card:hover .course-art img{transform:none}}
+
+.coffee-surface{background-image:url('assets/latte-surface.webp');background-size:100% 100%;border:4px solid #e9decb;box-shadow:inset 0 0 5px #6d3b1b66}
