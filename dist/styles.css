@@ -87,3 +87,15 @@
 .motion-paused .hero-photo-layer{transform:translateY(-50%)}
 @media(max-width:760px){.hero-art.photo-hero{right:0;width:100%;height:360px;bottom:60px}.hero-photo-layer{mask-image:none;-webkit-mask-image:none}.photo-steam{left:23%;top:-10%;height:43%}}
 @media(prefers-reduced-motion:reduce){.hero-photo-layer{transform:translateY(-50%)!important}}
+
+/* Balanced hero spacing and clearly readable rising steam. */
+@media(min-width:761px){.hero-copy{width:49%}.hero-art.photo-hero{right:6%;width:47%;top:16%;height:70%}.photo-hero .scene-caption{bottom:8%}}
+.photo-steam{left:21%;top:-25%;width:23%;height:58%;filter:none;overflow:visible}
+.photo-steam svg{width:100%;height:100%;overflow:visible}
+.vapour-ribbon{transform-origin:90px 235px;animation:steam-ribbon 6s ease-in-out infinite;opacity:.7}
+.ribbon-two{animation-delay:-2s;animation-duration:7.5s}
+.ribbon-three{animation-delay:-4s;animation-duration:5.5s}
+@keyframes steam-ribbon{0%{opacity:.25;transform:translate(0,12px) scale(.9,1)}35%{opacity:.8;transform:translate(-5px,-5px) scale(1,1.04)}70%{opacity:.55;transform:translate(7px,-20px) scale(1.08,1.08)}100%{opacity:.25;transform:translate(0,12px) scale(.9,1)}}
+@media(max-width:760px){.hero-art.photo-hero{right:24px;width:calc(100% - 48px);height:320px;bottom:75px}.photo-hero .scene-caption{bottom:0}.photo-steam{left:21%;top:-25%;width:23%;height:58%}}
+.motion-paused .photo-steam{display:block}.motion-paused .vapour-ribbon{animation:none;opacity:.5}
+@media(prefers-reduced-motion:reduce){.photo-steam{display:block}.vapour-ribbon{animation:none;opacity:.5}}
