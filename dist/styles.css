@@ -61,3 +61,19 @@
 /* Glazed ceramic fallback: shaped highlights, cool half-tone, warm bounce. */
 .cup-body{background:radial-gradient(ellipse at 23% 18%,#ffffffb0,transparent 35%),radial-gradient(ellipse at 47% 105%,#ebd8bb80,transparent 43%),linear-gradient(105deg,#f9f6ef 0%,#e9e5dc 25%,#c9c5bd 53%,#89867f 79%,#b3a796 100%);box-shadow:inset 3px 2px 4px #fff9,inset -3px -9px 13px #30271d55,0 10px 9px -7px #080503bb;border-top:3px solid #f4eee3}
 .saucer{background:radial-gradient(ellipse at 51% 32%,#463d32 0%,#7d7568 23%,#c9c2b5 34%,#eee9df 52%,#fffaf0 64%,#b7afa1 71%,#6d6251 74%,transparent 75%)}
+
+/* Photographic hero: image carries the material detail; motion stays subtle. */
+.hero-art.photo-hero{right:-3%;top:8%;width:64%;height:83%;overflow:hidden}
+.hero-photo-layer{position:absolute;inset:0;transform:translate(var(--photo-x,0px),var(--photo-y,0px));transition:transform 1s cubic-bezier(.2,.65,.3,1);mask-image:radial-gradient(ellipse at 57% 53%,#000 42%,#000c 59%,transparent 77%);-webkit-mask-image:radial-gradient(ellipse at 57% 53%,#000 42%,#000c 59%,transparent 77%)}
+.hero-photo-layer picture{display:block;width:100%;height:100%}
+.hero-photo-layer img{object-fit:contain;object-position:center}
+.photo-hero .scene-caption{bottom:0;left:0;right:0;text-align:center}
+.photo-steam{position:absolute;left:42%;top:15%;width:20%;height:27%;pointer-events:none;filter:blur(6px)}
+.photo-steam i{position:absolute;bottom:0;left:20%;width:32%;height:75%;opacity:0;border-radius:50%;background:radial-gradient(ellipse at 45% 60%,#eee5d24d 0%,#e9ddc31c 30%,transparent 65%);animation:photo-vapour 7s ease-in-out infinite;transform-origin:50% 100%}
+.photo-steam i:nth-child(2){left:46%;height:100%;animation-delay:-2.5s;animation-duration:8s}
+.photo-steam i:nth-child(3){left:2%;height:85%;animation-delay:-5s;animation-duration:9s}
+@keyframes photo-vapour{0%{opacity:0;transform:translate(0,18px) scale(.65,.7) rotate(-7deg)}25%{opacity:.55}65%{opacity:.3}100%{opacity:0;transform:translate(15px,-55px) scale(1.35,1.2) rotate(12deg)}}
+.motion-paused .hero-photo-layer{transform:none;transition:none}
+.motion-paused .photo-steam{display:none}
+@media(max-width:760px){.hero-art.photo-hero{top:auto;bottom:55px;right:0;width:100%;height:390px}.hero-photo-layer{mask-image:radial-gradient(ellipse at 50% 53%,#000 40%,transparent 77%);-webkit-mask-image:radial-gradient(ellipse at 50% 53%,#000 40%,transparent 77%)}.photo-hero .scene-caption{bottom:5px}.photo-steam{top:12%;left:42%;height:28%}}
+@media(prefers-reduced-motion:reduce){.hero-photo-layer{transform:none!important;transition:none}.photo-steam{display:none}}

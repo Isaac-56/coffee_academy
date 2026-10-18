@@ -16,18 +16,13 @@ const dialog=$('#detail-dialog');function openDialog(html){$('#dialog-content').
 $('#course-grid').addEventListener('click',e=>{const b=e.target.closest('[data-course]');if(!b)return;const c=courses.find(x=>x.id===b.dataset.course);openDialog(`<p class="eyebrow">PROPOSED COURSE OUTLINE · FOR REVIEW</p><h2>${c.title}</h2><p>${c.description}</p><ul>${c.topics.map(t=>`<li>${t}</li>`).join('')}</ul><p>Duration, fees and the final syllabus are awaiting Henok’s confirmation. Online learning is available at beginner level only.</p><a class="button solid" href="#admissions" id="course-enquire">Enquire about training <span>↗</span></a>`);$('#course-enquire').addEventListener('click',()=>{dialog.close();$('#format').value='in-person';syncLevels();$('#application-form textarea').value=`I am interested in ${c.title}.`;});});
 const photos=[{src:'assets/lab.webp',title:'The brewing bench',alt:'Reference photograph of pour-over coffee preparation'},{src:'assets/beans.webp',title:'A study in texture',alt:'Reference photograph of roasted coffee beans'}];$$('[data-gallery]').forEach(b=>b.addEventListener('click',()=>{const p=photos[+b.dataset.gallery];openDialog(`<img src="${p.src}" alt="${p.alt}"><h2>${p.title}</h2><p>Atmosphere reference only. This is not a photograph of Henok’s training facilities.</p>`);}));
 $('#privacy-open').addEventListener('click',()=>openDialog('<p class="eyebrow">PRIVACY & ENQUIRIES</p><h2>Your information, thoughtfully handled.</h2><p>In this preview, enquiry details stay in this page and can be downloaded to your device. They are not sent to Henok or saved on a server. Reloading the page clears the form. Your motion preference may be saved in this browser.</p><p>Live registrations, student accounts, payments and newsletter delivery are not enabled. Before accepting real registrations, the academy must provide its contact information and a privacy notice covering data handling and retention.</p><p>Joining an ordinary WhatsApp group makes your phone number visible to other members. Group invitations will be provided only after class confirmation.</p><p>Typography, the 3D library and reference images are served with the website.</p>'));
-// Lazy-load one shared Three.js module. Low-power devices keep the CSS artwork until requested.
-let hero,heroLoading=false;
-async function loadHero(){
- if(hero||heroLoading)return;heroLoading=true;
- const parent=$('#hero-art');
- try{const {createScene}=await import('./scene.js?v=tera-5');
- hero=createScene($('#hero-canvas'),'hero',{paused,onReady:()=>parent.classList.add('ready'),onFailure:()=>parent.classList.remove('ready')});
- if(hero){scenes.push(hero);$('#scene-toggle').textContent='3D experience active';}
- }catch{parent.classList.remove('ready');$('#scene-toggle').textContent='Lightweight view';}finally{heroLoading=false;}
+// The photographic hero has no WebGL dependency. Small pointer movement
+// adds depth without distorting the cup; touch and reduced-motion stay still.
+const heroArt=$('#hero-art');
+if(matchMedia('(hover:hover) and (pointer:fine)').matches){
+ heroArt.addEventListener('pointermove',e=>{if(paused)return;const r=heroArt.getBoundingClientRect();heroArt.style.setProperty('--photo-x',`${((e.clientX-r.left)/r.width-.5)*10}px`);heroArt.style.setProperty('--photo-y',`${((e.clientY-r.top)/r.height-.5)*7}px`);},{passive:true});
+ heroArt.addEventListener('pointerleave',()=>{heroArt.style.setProperty('--photo-x','0px');heroArt.style.setProperty('--photo-y','0px');});
 }
-const lowPower=reduced.matches||navigator.connection?.saveData||(navigator.deviceMemory&&navigator.deviceMemory<=4)||matchMedia('(max-width:760px)').matches;
-$('#scene-toggle').addEventListener('click',loadHero);if(!lowPower)setTimeout(loadHero,250);
 // Photography replaces the second WebGL scene. Chapters work by keyboard,
 // touch or scroll, and remain still when motion is paused.
 let currentStage=0,manualUntil=0;
