@@ -82,3 +82,7 @@ Hero cutout revision: transparent RGBA cup/saucer with burlap sack, roasted bean
 Hero spacing refinement: desktop composition reduced from 59vw to 47vw with a 6vw right inset; mobile uses 24px side gutters. Steam uses three softened SVG ribbons aligned with the cup, with staggered drift and visible static wisps when motion is paused or reduced.
 
 Steam revision: lightweight transparent WebGL noise overlay with three irregular rising plumes, broadening turbulence and a soft upper fade. 300x420 rendering capped at 25fps, suspended offscreen/in background/when motion paused. Static current frame remains for reduced motion. Existing SVG is retained only as a WebGL-unavailable fallback.
+
+## Functional platform supersedes earlier preview limitations
+The homepage now links to a protected student portal. Admin and student routes use the Sites authentication boundary, with ADMIN_EMAILS enforced server-side. D1 stores users, courses, lessons, enrolments, completion and audit records. R2 stores private teaching uploads; every file request checks enrolment. The public homepage and approved hero remain intact. No seed courses or fabricated students are inserted. The site remains private until the owner authorizes sharing. Notifications are in-portal; email, payments and automatic WhatsApp messages are not enabled.
+Validation: nine SQLite-backed business/security tests and enquiry-validation checks, TypeScript checking and production Vinext build. Browser UI QA unavailable in this environment.
