@@ -1,6 +1,6 @@
-# Henok Asrat — Coffee Academy
+# TERA Coffee Academy
 
-A planned coffee training website and learning platform for Henok Asrat.
+Coffee training website and planned learning platform for TERA Coffee Academy, with instructor Henok Asrat.
 
 ## Status
 

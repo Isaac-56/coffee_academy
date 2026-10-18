@@ -1,7 +1,7 @@
 // Edit this file to replace proposed course copy and configure live integrations.
 // Never put API keys or private WhatsApp group invitation links in public files.
 export const settings = {
-  academyName: 'Henok Asrat',
+  academyName: 'TERA Coffee Academy',
   enquiryEndpoint: '', // HTTPS endpoint accepting POST JSON; must validate, rate-limit and store server-side.
   newsletterEndpoint: '',
 };
