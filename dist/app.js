@@ -23,6 +23,7 @@ if(matchMedia('(hover:hover) and (pointer:fine)').matches){
  heroArt.addEventListener('pointermove',e=>{if(paused)return;const r=heroArt.getBoundingClientRect();heroArt.style.setProperty('--photo-x',`${((e.clientX-r.left)/r.width-.5)*10}px`);heroArt.style.setProperty('--photo-y',`${((e.clientY-r.top)/r.height-.5)*7}px`);},{passive:true});
  heroArt.addEventListener('pointerleave',()=>{heroArt.style.setProperty('--photo-x','0px');heroArt.style.setProperty('--photo-y','0px');});
 }
+import('./vapour.js?v=tera-9').then(({startVapour})=>{const vapour=startVapour($('.photo-steam'),paused);if(vapour)scenes.push(vapour);}).catch(()=>{});
 // Photography replaces the second WebGL scene. Chapters work by keyboard,
 // touch or scroll, and remain still when motion is paused.
 let currentStage=0,manualUntil=0;
