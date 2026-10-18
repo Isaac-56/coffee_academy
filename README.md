@@ -4,7 +4,7 @@ A planned coffee training website and learning platform for Henok Asrat.
 
 ## Status
 
-Project scope initialised. Application code, authentication, storage, integrations and deployment are not implemented yet. This repository currently documents the agreed scope; it is not a working learning platform.
+The cinematic public website frontend is implemented with procedural Three.js scenes, responsive styling, course exploration and an enquiry draft flow. Student accounts, admin tools, protected lessons and live integrations remain pending. See [implementation and setup](docs/IMPLEMENTATION.md) for instructions and launch requirements.
 
 ## Confirmed requirements
 
@@ -83,3 +83,4 @@ Henok's approved biography, photograph, qualifications, curriculum, learning mat
 ## Repository hygiene
 
 Keep credentials, student records, private group links and unpublished course media out of Git. Store configuration secrets in the deployment environment. Use illustrative data only in demos, clearly labelled as sample content.
+

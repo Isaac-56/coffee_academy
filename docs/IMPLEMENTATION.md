@@ -1,0 +1,54 @@
+# Website implementation
+
+## Run locally
+
+Node.js 22 or newer:
+
+```sh
+npm ci
+npm run build
+npm run check
+npx --yes serve dist
+```
+
+Serve over HTTP; do not open index.html using file:// because ES modules require an HTTP origin. The committed dist directory is directly deployable to static hosting. No secret credentials are needed to review the frontend.
+
+## Editing
+
+- `dist/content.js`: academy identity, proposed courses, craft journey and integration endpoint configuration.
+- `dist/index.html`: page sections, labels, contact placeholders and editorial copy.
+- `dist/styles.css`: design tokens, responsive layout and motion preferences.
+- `dist/app.js`: filters, dialogs, navigation, forms and lazy scene loading.
+- `src/scene.js`: procedural Three.js meshes, lighting, animation and lifecycle. Run `npm run build` after changing this file; do not edit the generated `dist/scene.js`.
+- `dist/assets`: replace reference photos and favicon here. Update alt text alongside imagery.
+
+The working identity is Henok Asrat / Coffee Education, pending a final academy brand name.
+
+## Included
+
+Ten public sections: hero, philosophy, courses, interactive craft, instructor, facilities, student-story placeholder, certification/partner placeholder, admissions and footer. Responsive styles, local fonts, reference imagery, course filtering, dialogs, keyboard-operable stage selection and rotation, reduced-motion control, lightweight CSS fallback and progressive reveal.
+
+The hero includes a procedural ceramic cup, saucer, gold trim, drawn latte art, floating beans and sprite steam. The craft scene progresses through bean, roast, grounds, dripper and cup. These are authored procedural models, not scanned photorealistic GLB assets. Desktop scrolling changes stages and camera distance; buttons allow direct control on all layouts. Scenes suspend animation when out of view or when the document is hidden. Mobile/save-data/low-memory/reduced-motion clients start with CSS artwork and may explicitly activate 3D.
+
+## What is not live yet
+
+This is the public website frontend. Student accounts, protected lessons, the instructor admin panel, persistent enrolments, payments, email delivery and WhatsApp Business automation are not implemented by this release. They remain in the original project scope.
+
+The admissions form validates locally and creates a downloadable text enquiry. It does not transmit data or reserve a seat. A live HTTPS `enquiryEndpoint` may be configured after implementing a server that validates the same rules, verifies consent, applies rate limiting, stores registrations and returns `{ "accepted": true }` only after durable acceptance. Never embed an API key in frontend code. HTTP errors, timeouts and an unconfirmed response must not show a successful submission.
+
+Newsletter collection is deliberately disabled until a double-opt-in service and privacy notice are configured. The optional endpoint must return `accepted: true` only after queuing a confirmation request.
+
+Do not place private WhatsApp invitation links in `content.js`. Retrieve them server-side only for authenticated, confirmed batch members. Clicking a link must not be treated as verified membership.
+
+## Before a public launch
+
+Replace proposed topics, placeholder fees/duration, biography, portrait, reference facility imagery, contact details, map, social profiles, student stories and certifications with Henok-approved content. Only display partner logos with a real affiliation. Provide the final privacy notice and retention policy. Configure and verify the live registration backend and delivery channel. Conduct desktop/mobile browser and assistive-technology QA; browser rendering was not verified in the build environment.
+
+## Image references
+
+Images are downloaded Unsplash reference photographs, not Henok's facilities:
+- https://images.unsplash.com/photo-1511081692775-05d0f180a065
+- https://images.unsplash.com/photo-1442512595331-e89e73853f31
+- https://images.unsplash.com/photo-1447933601403-0c6688de566e
+
+Font and Three.js licenses are included alongside this document.
