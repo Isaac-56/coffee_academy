@@ -21,7 +21,7 @@ let hero,heroLoading=false;
 async function loadHero(){
  if(hero||heroLoading)return;heroLoading=true;
  const parent=$('#hero-art');
- try{const {createScene}=await import('./scene.js?v=tera-4');
+ try{const {createScene}=await import('./scene.js?v=tera-5');
  hero=createScene($('#hero-canvas'),'hero',{paused,onReady:()=>parent.classList.add('ready'),onFailure:()=>parent.classList.remove('ready')});
  if(hero){scenes.push(hero);$('#scene-toggle').textContent='3D experience active';}
  }catch{parent.classList.remove('ready');$('#scene-toggle').textContent='Lightweight view';}finally{heroLoading=false;}

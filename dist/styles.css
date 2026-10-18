@@ -57,3 +57,7 @@
 @media(max-width:600px){.story-frame{height:360px}.photographic-story .craft-sticky{padding-inline:24px}.story-frame figcaption{left:20px;right:20px;font-size:25px}.story-folio{left:20px;font-size:48px}.photographic-story .stage-nav button{font-size:21px}.photographic-story .stage-nav small{display:block;margin-bottom:6px}}
 .motion-paused .story-photo{transition:none;transform:none}
 @media(prefers-reduced-motion:reduce){.photographic-story{height:auto}.photographic-story .craft-sticky{position:relative;height:auto}.story-frame{height:480px}.story-photo{transition:none;transform:none}.story-instruction{display:none}}
+
+/* Glazed ceramic fallback: shaped highlights, cool half-tone, warm bounce. */
+.cup-body{background:radial-gradient(ellipse at 23% 18%,#ffffffb0,transparent 35%),radial-gradient(ellipse at 47% 105%,#ebd8bb80,transparent 43%),linear-gradient(105deg,#f9f6ef 0%,#e9e5dc 25%,#c9c5bd 53%,#89867f 79%,#b3a796 100%);box-shadow:inset 3px 2px 4px #fff9,inset -3px -9px 13px #30271d55,0 10px 9px -7px #080503bb;border-top:3px solid #f4eee3}
+.saucer{background:radial-gradient(ellipse at 51% 32%,#463d32 0%,#7d7568 23%,#c9c2b5 34%,#eee9df 52%,#fffaf0 64%,#b7afa1 71%,#6d6251 74%,transparent 75%)}

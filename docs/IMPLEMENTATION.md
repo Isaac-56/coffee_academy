@@ -70,3 +70,5 @@ The cup uses a generated photographic coffee-surface texture at `dist/assets/lat
 
 ## TERA photographic journal revision
 The craft section now uses three photographic chapters (Character, Ritual, Expression), with scroll crossfades on desktop and accessible chapter buttons everywhere. Existing licensed reference photographs are illustrative, not academy facilities. The second WebGL canvas is no longer loaded. Hero ceramic handle uses a continuous Bezier ribbon with rounded bevels and two bowl attachment shoulders; latte surface and steam are preserved. Reduced-motion and compact layouts avoid the pinned scroll experience.
+
+Ceramic lighting revision: asymmetric studio softbox reflections, restrained fill, glazed dielectric material, tighter shadow frustum and foot contact shadow. CSS fallback has shaped highlight and shadow gradients. Reference image guides lighting only; cup geometry and photographic journal are preserved.

@@ -24,7 +24,7 @@ export function makeMaterials({onTextureReady}={}){
  const beanMap=texture(512,(c,n)=>{const d=c.createImageData(n,n);for(let y=0;y<n;y++)for(let x=0;x<n;x++){const a=(y*n+x)*4;const v=100+18*Math.sin(x*.13+Math.sin(y*.03)*4)+rnd()*50;d.data.set([v,v,v,255],a);}c.putImageData(d,0,0);c.strokeStyle='#353535';c.lineWidth=1;for(let i=0;i<170;i++){const x=rnd()*n,y=rnd()*n;c.beginPath();c.moveTo(x,y);c.bezierCurveTo(x+8,y+5,x-6,y+10,x+2,y+20+rnd()*15);c.stroke();}},false);
  const label=texture(512,(c,n)=>{c.clearRect(0,0,n,n);c.fillStyle='#8d6939';c.font='400 135px Georgia';c.textAlign='center';c.textBaseline='middle';c.fillText('TERA',n/2,n/2);});
  const materials={
-  porcelain:new THREE.MeshPhysicalMaterial({color:0xf1e9dd,roughness:.29,metalness:0,ior:1.49,clearcoat:.48,clearcoatRoughness:.16,bumpMap:grain,bumpScale:.0015,envMapIntensity:.85,side:THREE.DoubleSide}),
+  porcelain:new THREE.MeshPhysicalMaterial({color:0xeee9e0,roughness:.23,metalness:0,ior:1.5,clearcoat:.85,clearcoatRoughness:.12,bumpMap:grain,bumpScale:.00065,envMapIntensity:1.0,side:THREE.DoubleSide}),
   glass:new THREE.MeshPhysicalMaterial({color:0xe6eee7,roughness:.12,metalness:0,transparent:true,opacity:.28,side:THREE.DoubleSide,depthWrite:false,envMapIntensity:1.25,clearcoat:1}),
   glassEdge:new THREE.MeshStandardMaterial({color:0xb2c2b5,roughness:.15,metalness:.2,transparent:true,opacity:.68}),
   wood:new THREE.MeshStandardMaterial({color:0x85603a,roughness:.62,bumpMap:grain,bumpScale:.008}),

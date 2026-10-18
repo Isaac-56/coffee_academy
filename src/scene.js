@@ -1,5 +1,4 @@
 import * as THREE from 'three';
-import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import {createCup,createBean,createDripper,createSampleDish,addMesh} from './coffee-models.js';
 import {makeMaterials,contactShadow} from './materials.js';
 import {createSteam} from './steam.js';
@@ -11,22 +10,37 @@ export function createScene(canvas,kind,{onReady,onFailure,paused=false}={}){
  renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=.92;
  renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
  const scene=new THREE.Scene(),camera=new THREE.PerspectiveCamera(35,1,.1,40),root=new THREE.Group();scene.add(root);
- // Image-based studio reflections give glazed porcelain a readable curved surface.
- const room=new RoomEnvironment();const pmrem=new THREE.PMREMGenerator(renderer);const environment=pmrem.fromScene(room,.055);scene.environment=environment.texture;scene.environmentIntensity=.65;room.dispose();pmrem.dispose();
- scene.add(new THREE.HemisphereLight(0xfff1df,0x2b1a12,.65));
- const key=new THREE.DirectionalLight(0xfff1df,2.2);key.position.set(-3,6,5);key.castShadow=true;key.shadow.mapSize.set(1024,1024);key.shadow.camera.left=-3;key.shadow.camera.right=3;key.shadow.camera.top=4;key.shadow.camera.bottom=-3;key.shadow.normalBias=.015;key.shadow.bias=-.0002;key.shadow.radius=4;scene.add(key);
- const rim=new THREE.DirectionalLight(0xe8c18e,1.6);rim.position.set(3,4,-2);scene.add(rim);
- const fill=new THREE.DirectionalLight(0xdfe7f0,.5);fill.position.set(2,2,5);scene.add(fill);
+ // Asymmetric photographic softboxes: the dark studio provides negative fill,
+ // while broad luminous cards describe the curvature of the ceramic glaze.
+ const studio=new THREE.Scene();studio.background=new THREE.Color(0x171310);
+ function softbox(w,h,intensity,position){
+  const panel=new THREE.Mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshBasicMaterial({color:new THREE.Color().setScalar(intensity),side:THREE.DoubleSide}));
+  panel.position.set(...position);panel.lookAt(0,.5,0);studio.add(panel);
+ }
+ softbox(3.2,5,5,[-3.8,4.8,4]);
+ softbox(1.1,3.5,2,[4,2,-2.5]);
+ softbox(4,2,1.2,[0,6,-1]);
+ const pmrem=new THREE.PMREMGenerator(renderer),environment=pmrem.fromScene(studio,.035);
+ scene.environment=environment.texture;scene.environmentIntensity=.8;
+ studio.traverse(o=>{o.geometry?.dispose();o.material?.dispose();});pmrem.dispose();
+ scene.add(new THREE.HemisphereLight(0xfff4e7,0x21170f,.22));
+ const key=new THREE.DirectionalLight(0xfff3e4,2.6);key.position.set(-3.8,5,4);key.castShadow=true;
+ key.shadow.mapSize.set(2048,2048);key.shadow.camera.left=-2.5;key.shadow.camera.right=2.5;key.shadow.camera.top=3;key.shadow.camera.bottom=-2.5;
+ key.shadow.camera.near=.5;key.shadow.camera.far=15;key.shadow.normalBias=.005;key.shadow.bias=-.00008;key.shadow.radius=3;scene.add(key);
+ const rim=new THREE.DirectionalLight(0xffe3c1,.7);rim.position.set(3,3,-3);scene.add(rim);
+ const fill=new THREE.DirectionalLight(0xe9edf2,.14);fill.position.set(3,1,4);scene.add(fill);
  const materials=makeMaterials({onTextureReady:()=>{if(disposed)return false;draw();return true;}}),stageGroups=[],beans=[],steamGroups=[];
  let stage=0,visible=true,disposed=false,frame=0,last=0,elapsed=0,targetX=0,targetY=0,manualAngle=0,dragging=false,startX=0;
  let ro,io,primaryCup;
  if(kind==='hero'){
   primaryCup=createCup(materials);primaryCup.rotation.y=-.15;root.add(primaryCup);
+  // Tight occlusion at the foot grounds the bowl against its saucer.
+  const footShadow=addMesh(new THREE.PlaneGeometry(1.15,1.15),new THREE.MeshBasicMaterial({map:contactShadow(),transparent:true,opacity:.48,depthWrite:false}),primaryCup,[0,.024,0]);footShadow.rotation.x=-Math.PI/2;footShadow.castShadow=false;footShadow.receiveShadow=false;
   const steam=createSteam();root.add(steam);steamGroups.push(steam);
   // Keep the product grounded; only the two small beans float slowly.
   [[-1.72,1.20,-.25,.19],[1.85,2.0,-.65,.14]].forEach((p,i)=>{const b=createBean(materials.bean);b.scale.setScalar(p[3]);b.position.set(p[0],p[1],p[2]);b.rotation.set(.35,i*.7,.5+i);b.userData.base=b.position.clone();root.add(b);beans.push(b);});
   const shadow=addMesh(new THREE.PlaneGeometry(5.8,5.8),new THREE.MeshBasicMaterial({map:contactShadow(),transparent:true,depthWrite:false}),root,[0,-.124,0]);shadow.rotation.x=-Math.PI/2;shadow.castShadow=false;
-  const receiver=addMesh(new THREE.PlaneGeometry(10,10),new THREE.ShadowMaterial({opacity:.20}),root,[0,-.121,0]);receiver.rotation.x=-Math.PI/2;receiver.castShadow=false;
+  const receiver=addMesh(new THREE.PlaneGeometry(10,10),new THREE.ShadowMaterial({opacity:.32}),root,[0,-.121,0]);receiver.rotation.x=-Math.PI/2;receiver.castShadow=false;
   camera.position.set(2.8,3.4,7.4);camera.lookAt(0,1.3,0);
  }else{
   // Actual sample arrangements, scaled to a shared tabletop presentation.
