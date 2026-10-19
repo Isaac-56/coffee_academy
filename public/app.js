@@ -1,3 +1,4 @@
+import {storyChapter} from './story-progress.js';
 import {courses, stages, settings, allowedLevels, validateEnquiry} from './content.js';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 document.documentElement.classList.add('js');$('#year').textContent=new Date().getFullYear();
@@ -8,7 +9,7 @@ updateMotion();$('#motion-toggle').addEventListener('click',()=>{paused=!paused;
 // Reveal progressively; all content remains visible when JavaScript is unavailable.
 const reveal=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');reveal.unobserve(e.target);}}),{threshold:.08});$$('.reveal').forEach(e=>reveal.observe(e));
 const menu=$('.menu-toggle'),nav=$('#navigation');function closeMenu(){nav.classList.remove('open');menu.setAttribute('aria-expanded','false');}menu.addEventListener('click',()=>{const open=nav.classList.toggle('open');menu.setAttribute('aria-expanded',String(open));});nav.addEventListener('click',e=>{if(e.target.closest('a'))closeMenu();});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&nav.classList.contains('open')){closeMenu();menu.focus();}});
-const cursor=$('.cursor');if(matchMedia('(pointer:fine)').matches){document.addEventListener('pointermove',e=>{cursor.style.transform=`translate(${e.clientX+50-14}px,${e.clientY+50-14}px)`;cursor.classList.toggle('over',!!e.target.closest('a,button,input,select,textarea'));},{passive:true});}
+import('./pointer-light.js').then(({pointerLight})=>{const light=pointerLight(paused);if(light)scenes.push(light);}).catch(()=>{});
 const coursePhotography={cup:['lab.webp','Pour-over coffee preparation'],latte:['latte.webp','Milk being poured into a real ceramic coffee cup'],bean:['beans.webp','Roasted coffee bean texture'],sensory:['sensory.webp','Three people holding different freshly prepared coffees'],business:['coffee.webp','A warm café interior']};
 function renderCourses(filter='all'){const grid=$('#course-grid');grid.innerHTML='';courses.filter(c=>filter==='all'||c.format.includes(filter)).forEach(c=>{const article=document.createElement('article');article.className='course-card';article.innerHTML=`<div class="course-art"><span class="course-num">${c.number}</span><img src="assets/${coursePhotography[c.icon][0]}" alt="${coursePhotography[c.icon][1]}" loading="lazy" width="900" height="600"></div><div class="course-body"><span class="course-tag">${c.format.length===2?'ONLINE & IN PERSON':'PROPOSED IN-PERSON TOPIC'}</span><h3>${c.title}</h3><p>${c.subtitle}</p><div class="course-meta"><span>${c.level==='To be confirmed'?'Level: TBC':c.level}</span><span>Duration: TBC</span><span>Fee: TBC</span></div><button class="course-open" data-course="${c.id}">Explore the pathway <span>↗</span></button></div>`;grid.append(article);if(matchMedia('(hover:hover)').matches){article.addEventListener('pointermove',e=>{if(paused)return;const r=article.getBoundingClientRect();article.style.transform=`perspective(1000px) rotateX(${-(e.clientY-r.top-r.height/2)/70}deg) rotateY(${(e.clientX-r.left-r.width/2)/70}deg) translateY(-3px)`;});article.addEventListener('pointerleave',()=>article.style.transform='');}});}
 renderCourses();$$('[data-filter]').forEach(b=>b.addEventListener('click',()=>{$$('[data-filter]').forEach(x=>{x.classList.toggle('active',x===b);x.setAttribute('aria-pressed',String(x===b));});renderCourses(b.dataset.filter);}));
@@ -26,7 +27,7 @@ if(matchMedia('(hover:hover) and (pointer:fine)').matches){
 import('./vapour.js?v=tera-9').then(({startVapour})=>{const vapour=startVapour($('.photo-steam'),paused);if(vapour)scenes.push(vapour);}).catch(()=>{});
 // Photography replaces the second WebGL scene. Chapters work by keyboard,
 // touch or scroll, and remain still when motion is paused.
-let currentStage=0,manualUntil=0;
+let currentStage=0;
 function setStage(index){
  currentStage=Math.max(0,Math.min(stages.length-1,index));const s=stages[currentStage];
  $('#stage-number').textContent=`0${currentStage+1} / ${s.label}`;
@@ -35,11 +36,25 @@ function setStage(index){
  $$('[data-stage]').forEach(b=>{const active=+b.dataset.stage===currentStage;b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active));});
  $$('[data-story-image]').forEach(img=>{const active=+img.dataset.storyImage===currentStage;img.classList.toggle('is-active',active);img.setAttribute('aria-hidden',String(!active));});
 }
-setStage(0);$$('[data-stage]').forEach(b=>b.addEventListener('click',()=>{manualUntil=performance.now()+4000;setStage(+b.dataset.stage);}));
+const story=$('#craft'),pinned=story.querySelector('.craft-sticky');
+function storyIsPinned(){return getComputedStyle(pinned).position==='sticky';}
+function syncStory(){
+ if(!storyIsPinned())return;
+ const r=story.getBoundingClientRect();
+ const index=storyChapter(r.top,r.height,pinned.getBoundingClientRect().height,stages.length);
+ if(index!==currentStage)setStage(index);
+}
+setStage(0);
+$$('[data-stage]').forEach(b=>b.addEventListener('click',()=>{
+ const index=+b.dataset.stage;setStage(index);
+ if(storyIsPinned()){
+  const r=story.getBoundingClientRect(),travel=r.height-pinned.getBoundingClientRect().height;
+  window.scrollTo({top:scrollY+r.top+travel*(index+.5)/stages.length,behavior:'instant'});
+ }
+}));
 let scrollQueued=false;
-window.addEventListener('scroll',()=>{if(scrollQueued)return;scrollQueued=true;requestAnimationFrame(()=>{
- scrollQueued=false;if(paused||innerWidth<=900||innerHeight<700||performance.now()<manualUntil)return;
- const r=$('#craft').getBoundingClientRect(),travel=r.height-innerHeight;
- if(travel>0&&r.top<=0&&r.bottom>=innerHeight){const index=Math.min(stages.length-1,Math.floor((-r.top/travel)*stages.length));if(index!==currentStage)setStage(index);}
- });},{passive:true});
+function queueStory(){if(scrollQueued)return;scrollQueued=true;requestAnimationFrame(()=>{scrollQueued=false;syncStory();});}
+window.addEventListener('scroll',queueStory,{passive:true});
+window.addEventListener('resize',queueStory,{passive:true});
+window.addEventListener('pageshow',queueStory);queueStory();
 $('#newsletter').addEventListener('submit',async e=>{e.preventDefault();const status=$('#newsletter-status');if(!settings.newsletterEndpoint){status.textContent='Newsletter registration is not open yet. Your email has not been stored or sent.';return;}const button=e.currentTarget.querySelector('button');button.disabled=true;try{const r=await fetch(settings.newsletterEndpoint,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:$('#newsletter-email').value}),signal:AbortSignal.timeout(15000)});if(!r.ok)throw new Error();const data=await r.json();if(data.accepted!==true)throw new Error();status.textContent='Please check your email to confirm your subscription.';}catch{status.textContent='Unable to confirm your subscription. Please try again.';}finally{button.disabled=false;}});
