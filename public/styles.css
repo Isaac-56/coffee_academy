@@ -150,3 +150,6 @@
 .glass-cursor.visible{opacity:1}.glass-cursor.interactive{width:58px;height:58px;background:radial-gradient(circle at 30% 25%,#fff7e526,#c9a66b0e 65%,#ffffff05)}
 .motion-paused .glass-cursor{display:none}
 @media(prefers-reduced-motion:reduce),(hover:none),(pointer:coarse){.glass-cursor{display:none}}
+/* Warm roasted-brown haze, with feathered edges instead of a glass outline. */
+.glass-cursor{width:62px;height:62px;background:radial-gradient(circle,#a4744552 0%,#80502f38 32%,#613b201c 55%,transparent 74%);border:0;box-shadow:none;backdrop-filter:blur(1px);-webkit-backdrop-filter:blur(1px);filter:blur(3px);mask-image:radial-gradient(circle,#000 25%,#0009 55%,transparent 73%);-webkit-mask-image:radial-gradient(circle,#000 25%,#0009 55%,transparent 73%)}
+.glass-cursor.interactive{width:78px;height:78px;background:radial-gradient(circle,#b184535c 0%,#8a58383d 32%,#68402320 55%,transparent 74%)}
