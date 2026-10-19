@@ -1,0 +1,7 @@
+[build]
+  base = "netlify-public"
+  command = "node build.mjs"
+  publish = "site"
+
+[build.environment]
+  NODE_VERSION = "22"
