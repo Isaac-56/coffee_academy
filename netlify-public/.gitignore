@@ -1,2 +1,5 @@
 site/
 node_modules/
+
+node_modules/
+src/portal.generated.*
