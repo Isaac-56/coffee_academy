@@ -145,3 +145,8 @@
  .photographic-story .stage-nav button{padding:10px 0;font-size:19px}
 }
 @media(prefers-reduced-motion:reduce){.pointer-light{display:none}.photographic-story{height:auto}.photographic-story .craft-sticky{position:relative;height:auto}.photographic-story .story-frame{height:340px;min-height:240px;flex:auto}}
+/* Soft frosted-glass pointer: no trailing line or sharp ring. */
+.glass-cursor{position:fixed;left:0;top:0;width:44px;height:44px;border-radius:50%;pointer-events:none;z-index:70;opacity:0;background:radial-gradient(circle at 30% 25%,#fff7e51c,#e2cba10a 55%,#ffffff04);backdrop-filter:blur(3px) saturate(1.1);-webkit-backdrop-filter:blur(3px) saturate(1.1);box-shadow:inset 0 1px 2px #fff6,inset 0 -1px 2px #c9a66b25,0 3px 18px #0002;transition:opacity .25s,width .3s,height .3s,background .3s;will-change:transform}
+.glass-cursor.visible{opacity:1}.glass-cursor.interactive{width:58px;height:58px;background:radial-gradient(circle at 30% 25%,#fff7e526,#c9a66b0e 65%,#ffffff05)}
+.motion-paused .glass-cursor{display:none}
+@media(prefers-reduced-motion:reduce),(hover:none),(pointer:coarse){.glass-cursor{display:none}}
