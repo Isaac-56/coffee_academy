@@ -19,7 +19,9 @@ original Sites implementation stays independently usable.
    Configure custom SMTP before inviting real students; the default Supabase email
    service is for testing and has delivery restrictions/rate limits.
 4. Wait for the GitHub-triggered Netlify build. The settings remain base directory
-   `netlify-public`, command `node build.mjs`, publish directory `site`, Node 22.
+   `netlify-public`, command `npm ci --include=dev --include=optional --workspaces=false && node build.mjs`,
+   publish directory `site`, Node 22. This explicit clean install includes build
+   tooling even when the hosting environment omits development dependencies.
    A separate npm lockfile keeps this build independent of the Sites dependencies.
    The supplied project URL and **publishable** key are included in the build.
    Optional environment overrides: `NEXT_PUBLIC_SUPABASE_URL` and
